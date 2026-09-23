@@ -40,7 +40,10 @@ def get_llm(temperature: float = 0.2, model_name: Optional[str] = None):
 
     # Otherwise default to Google Gemini
     from langchain_google_genai import ChatGoogleGenerativeAI
-    selected_model = model_name or os.getenv("GEMINI_MODEL", "gemini-2.0-flash")
+    selected_model = model_name or os.getenv("GEMINI_MODEL", "gemini-3.6-flash")
+    if selected_model in ["gemini-2.0-flash", "gemini-1.5-flash", "gemini-2.5-flash"]:
+        selected_model = "gemini-3.6-flash"
+
     logger.info(f"Initializing Google Gemini LLM with model: {selected_model}")
     return ChatGoogleGenerativeAI(
         model=selected_model,

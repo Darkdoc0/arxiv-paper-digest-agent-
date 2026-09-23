@@ -1,9 +1,17 @@
-"""CLI Entrypoint for the Autonomous arXiv Paper Digest & QA Agent."""
-
+import os
 import sys
+import warnings
 import argparse
 import logging
 from typing import Optional
+
+# Suppress library noise from HuggingFace and GenAI for clean Rich UI
+os.environ["HF_HUB_DISABLE_SYMLINKS_WARNING"] = "1"
+os.environ["TOKENIZERS_PARALLELISM"] = "false"
+warnings.filterwarnings("ignore")
+logging.getLogger("google_genai").setLevel(logging.ERROR)
+logging.getLogger("huggingface_hub").setLevel(logging.ERROR)
+
 from rich.console import Console
 from rich.panel import Panel
 from rich.table import Table
@@ -16,7 +24,7 @@ load_dotenv()
 
 # Configure logger
 logging.basicConfig(
-    level=logging.WARNING,
+    level=logging.ERROR,
     format="%(asctime)s - %(name)s - %(levelname)s - %(message)s"
 )
 
