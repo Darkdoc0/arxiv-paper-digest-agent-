@@ -40,16 +40,31 @@ def get_llm(temperature: float = 0.2, model_name: Optional[str] = None):
 
     # Otherwise default to Google Gemini
     from langchain_google_genai import ChatGoogleGenerativeAI
-    selected_model = model_name or os.getenv("GEMINI_MODEL", "gemini-3.6-flash")
-    if selected_model in ["gemini-2.0-flash", "gemini-1.5-flash", "gemini-2.5-flash"]:
-        selected_model = "gemini-3.6-flash"
+    selected_model = model_name or os.getenv("GEMINI_MODEL", "gemini-3.5-flash-lite")
+    if selected_model in ["gemini-2.0-flash", "gemini-1.5-flash", "gemini-2.5-flash", "gemini-3.6-flash"]:
+        selected_model = "gemini-3.5-flash-lite"
 
     logger.info(f"Initializing Google Gemini LLM with model: {selected_model}")
-    return ChatGoogleGenerativeAI(
+    primary = ChatGoogleGenerativeAI(
         model=selected_model,
         temperature=temperature,
-        google_api_key=gemini_key
+        google_api_key=gemini_key,
+        max_retries=3
     )
+    # Automatic fallback models in case of quota or demand spikes
+    fallback1 = ChatGoogleGenerativeAI(
+        model="gemini-3.1-flash-lite",
+        temperature=temperature,
+        google_api_key=gemini_key,
+        max_retries=3
+    )
+    fallback2 = ChatGoogleGenerativeAI(
+        model="gemini-3.7-flash",
+        temperature=temperature,
+        google_api_key=gemini_key,
+        max_retries=3
+    )
+    return primary.with_fallbacks([fallback1, fallback2])
 
 
 def extract_text_content(content) -> str:
