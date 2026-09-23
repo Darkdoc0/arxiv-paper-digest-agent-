@@ -5,7 +5,7 @@ from typing import Dict, Any
 from langchain_core.messages import SystemMessage, HumanMessage
 from src.state import AgentState
 from src.tools.arxiv_client import extract_arxiv_id
-from src.tools.llm import get_llm
+from src.tools.llm import get_llm, extract_text_content
 
 logger = logging.getLogger(__name__)
 
@@ -45,7 +45,8 @@ def parse_query_node(state: AgentState) -> Dict[str, Any]:
                 "Keywords:"
             )
             response = llm.invoke([HumanMessage(content=prompt)])
-            extracted_keywords = response.content.strip().replace('"', '').replace("'", "")
+            raw_resp = extract_text_content(response.content)
+            extracted_keywords = raw_resp.strip().replace('"', '').replace("'", "")
             if extracted_keywords:
                 search_query = extracted_keywords
                 logger.info(f"Refined search query via LLM: '{search_query}'")

@@ -50,3 +50,22 @@ def get_llm(temperature: float = 0.2, model_name: Optional[str] = None):
         temperature=temperature,
         google_api_key=gemini_key
     )
+
+
+def extract_text_content(content) -> str:
+    """Normalize LLM response content into a clean string across different SDK formats."""
+    if isinstance(content, str):
+        return content
+    if isinstance(content, list):
+        parts = []
+        for item in content:
+            if isinstance(item, str):
+                parts.append(item)
+            elif isinstance(item, dict) and "text" in item:
+                parts.append(item["text"])
+            elif hasattr(item, "text"):
+                parts.append(getattr(item, "text"))
+            else:
+                parts.append(str(item))
+        return "".join(parts)
+    return str(content)

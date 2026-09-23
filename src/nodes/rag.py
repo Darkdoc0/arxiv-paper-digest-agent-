@@ -6,7 +6,7 @@ from langchain_core.messages import BaseMessage, HumanMessage, AIMessage, System
 from src.state import AgentState
 from src.nodes.briefing import ACTIVE_VECTOR_STORES
 from src.tools.vector_store import retrieve_relevant_chunks
-from src.tools.llm import get_llm
+from src.tools.llm import get_llm, extract_text_content
 
 logger = logging.getLogger(__name__)
 
@@ -77,7 +77,8 @@ def qa_node(state: AgentState) -> Dict[str, Any]:
             HumanMessage(content=question)
         ])
         
-        answer_text = ai_response.content.strip()
+        raw_text = extract_text_content(ai_response.content)
+        answer_text = raw_text.strip()
 
         # Guardrail: Check if the model answered despite lack of evidence
         if "i do not know" in answer_text.lower() or "not mentioned" in answer_text.lower() or "cannot be answered" in answer_text.lower():

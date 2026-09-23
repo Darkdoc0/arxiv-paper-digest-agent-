@@ -6,7 +6,7 @@ from langchain_core.messages import SystemMessage, HumanMessage
 from pydantic import BaseModel, Field
 from src.state import AgentState, PaperMetadata
 from src.tools.arxiv_client import fetch_paper_by_id, search_papers
-from src.tools.llm import get_llm
+from src.tools.llm import get_llm, extract_text_content
 
 logger = logging.getLogger(__name__)
 
@@ -58,7 +58,8 @@ def arxiv_retrieval_node(state: AgentState) -> Dict[str, Any]:
                     "Output ONLY the revised search query (1-4 words), nothing else."
                 )
                 res = llm.invoke([HumanMessage(content=reformulate_prompt)])
-                new_query = res.content.strip().replace('"', '').replace("'", "")
+                raw_res = extract_text_content(res.content)
+                new_query = raw_res.strip().replace('"', '').replace("'", "")
                 logger.info(f"Reformulated query: '{new_query}'")
                 
                 # Immediately retry with the new query
