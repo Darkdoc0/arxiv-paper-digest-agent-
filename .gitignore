@@ -1,6 +1,9 @@
 # Environment variables (contains private API keys)
 .env
 
+# Local-only presentation materials
+VIDEO_SCRIPT.md
+
 # Python Virtual Environments
 .venv/
 env/
