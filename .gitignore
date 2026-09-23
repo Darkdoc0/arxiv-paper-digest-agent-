@@ -1,0 +1,29 @@
+# Environment variables (contains private API keys)
+.env
+
+# Python Virtual Environments
+.venv/
+env/
+venv/
+
+# Python bytecode & cache
+__pycache__/
+*.py[cod]
+*$py.class
+*.egg-info/
+build/
+dist/
+
+# Pytest & testing caches
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Chroma & local data
+chroma_db/
+*.db
+*.sqlite3
+
+# OS metadata
+.DS_Store
+Thumbs.db
